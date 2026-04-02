@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Office Cafe | Work. Meet. Unwind.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            white: '#FFFFFF',
+                            dark: '#1A1A1A',
+                            light: '#F2F2F2',
+                            gold: '#C8A97E',
+                            gray: '#DADADA',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 40px -10px rgba(26,26,26,0.08)',
+                        'premium-hover': '0 20px 40px -10px rgba(26,26,26,0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & Utilities */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Hide scrollbar for review slider */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Loading Screen Animation */
+        #loader {
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #F2F2F2;
+            border-top: 3px solid #C8A97E;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Zoom Effect */
+        .hero-bg {
+            animation: slowZoom 20s ease-in-out infinite alternate;
+        }
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* Gallery Overlay */
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        /* Map Grayscale Filter */
+        .map-grayscale {
+            filter: grayscale(100%) contrast(1.2) opacity(0.8);
+            transition: filter 0.3s ease;
+        }
+        .map-grayscale:hover {
+            filter: grayscale(0%) contrast(1) opacity(1);
+        }
+    </style>
+</head>
+<body class="bg-brand-white text-brand-dark font-sans overflow-x-hidden">
+
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 z-50 bg-brand-white flex flex-col items-center justify-center">
+        <div class="spinner mb-4"></div>
+        <h2 class="font-heading font-bold text-xl tracking-widest uppercase">The Office</h2>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-40 transition-all duration-300 py-6 px-6 lg:px-12 bg-transparent">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" class="font-heading font-bold text-2xl tracking-widest uppercase text-white flex flex-col items-center leading-none z-50" id="nav-logo">
+                <span class="text-sm tracking-[0.3em] text-brand-gold mb-1">The</span>
+                OFFICE
+                <span class="text-[10px] tracking-widest text-brand-gray mt-1 font-sans font-light">CAFE & WORKSPACE</span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex space-x-8 items-center" id="nav-links">
+                <a href="#concept" class="text-white hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wider">Concept</a>
+                <a href="#features" class="text-white hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wider">Workspace</a>
+                <a href="#menu" class="text-white hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wider">Menu</a>
+                <a href="#location" class="text-white hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wider">Location</a>
+            </div>
+
+            <!-- Booking CTA -->
+            <div class="hidden md:block">
+                <a href="#booking" class="bg-brand-gold text-brand-white px-6 py-3 text-sm font-bold uppercase tracking-wider hover:bg-brand-dark transition-colors duration-300">
+                    Book a Table
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white z-50">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-brand-white flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 z-40">
+            <div class="flex flex-col items-center space-y-8 text-brand-dark">
+                <a href="#concept" class="text-xl font-heading font-semibold uppercase tracking-widest mobile-link">Concept</a>
+                <a href="#features" class="text-xl font-heading font-semibold uppercase tracking-widest mobile-link">Workspace</a>
+                <a href="#menu" class="text-xl font-heading font-semibold uppercase tracking-widest mobile-link">Menu</a>
+                <a href="#location" class="text-xl font-heading font-semibold uppercase tracking-widest mobile-link">Location</a>
+                <a href="#booking" class="mt-4 bg-brand-dark text-brand-white px-8 py-4 text-sm font-bold uppercase tracking-wider mobile-link">
+                    Book a Table
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0 bg-brand-dark">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop" alt="Corporate Cafe Interior" class="w-full h-full object-cover hero-bg opacity-40 blur-[2px]">
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/60 via-brand-dark/40 to-brand-dark/80"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto reveal">
+            <div class="mb-8 flex flex-col items-center">
+                <span class="text-sm tracking-[0.4em] text-brand-gold mb-2 uppercase font-medium">The</span>
+                <h1 class="font-heading font-bold text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-brand-white leading-none">
+                    Office
+                </h1>
+                <span class="text-xs md:text-sm tracking-[0.3em] text-brand-gray mt-4 font-sans font-light uppercase border-t border-brand-gold/30 pt-4 w-48 mx-auto">Cafe & Workspace</span>
+            </div>
+            
+            <h2 class="font-heading text-2xl md:text-4xl font-semibold text-brand-white mb-6 tracking-wide">
+                WORK. MEET. UNWIND.
+            </h2>
+            <p class="text-brand-gray text-base md:text-lg mb-10 max-w-2xl mx-auto font-light">
+                A refined café space designed for productivity and connection.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="#booking" class="w-full sm:w-auto bg-brand-white text-brand-dark px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-gold hover:text-brand-white transition-all duration-300">
+                    Book a Table
+                </a>
+                <a href="#menu" class="w-full sm:w-auto border border-brand-white text-brand-white px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-white hover:text-brand-dark transition-all duration-300">
+                    View Menu
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Concept Section -->
+    <section id="concept" class="py-24 bg-brand-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" alt="Workspace Concept" class="w-full h-[500px] object-cover">
+                        <!-- Decorative element -->
+                        <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-brand-light z-[-1]"></div>
+                        <div class="absolute -top-6 -left-6 w-24 h-24 border border-brand-gold/30 z-[-1]"></div>
+                    </div>
+                </div>
+                
+                <div class="reveal">
+                    <h4 class="text-brand-gold text-sm font-bold tracking-widest uppercase mb-4">Our Concept</h4>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold mb-6 text-brand-dark">More Than a Coffee Shop</h2>
+                    <p class="text-brand-dark/70 text-lg mb-6 leading-relaxed">
+                        The Office Cafe is a space designed for focus, meetings, and meaningful conversations. 
+                    </p>
+                    <p class="text-brand-dark/70 text-lg leading-relaxed mb-8">
+                        Whether you're here to work, meet, or relax, every detail is built around comfort and quality. We blend the premium amenities of a modern corporate office with the warmth and culinary excellence of a high-end café.
+                    </p>
+                    <a href="#features" class="inline-flex items-center text-brand-dark font-bold uppercase tracking-wider text-sm hover:text-brand-gold transition-colors">
+                        Explore the Space <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section id="features" class="py-24 bg-brand-light">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h4 class="text-brand-gold text-sm font-bold tracking-widest uppercase mb-4">Amenities</h4>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-brand-dark">Designed for Professionals</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-brand-white p-8 rounded-sm shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 reveal">
+                    <div class="w-12 h-12 bg-brand-light flex items-center justify-center mb-6 text-brand-gold">
+                        <i data-lucide="laptop" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-3">Workspace Ready</h3>
+                    <p class="text-brand-dark/60 text-sm leading-relaxed">
+                        Comfortable seating, high-speed Wi-Fi, and a productive atmosphere tailored for deep work.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-brand-white p-8 rounded-sm shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 reveal delay-100">
+                    <div class="w-12 h-12 bg-brand-light flex items-center justify-center mb-6 text-brand-gold">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-3">Meeting Friendly</h3>
+                    <p class="text-brand-dark/60 text-sm leading-relaxed">
+                        Private meeting rooms equipped with presentation screens, available for hourly booking.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-brand-white p-8 rounded-sm shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 reveal delay-200">
+                    <div class="w-12 h-12 bg-brand-light flex items-center justify-center mb-6 text-brand-gold">
+                        <i data-lucide="coffee" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-3">Premium Fare</h3>
+                    <p class="text-brand-dark/60 text-sm leading-relaxed">
+                        From artisanal breakfast to hearty lunches, crafted with care using locally sourced ingredients.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-brand-white p-8 rounded-sm shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 reveal delay-300">
+                    <div class="w-12 h-12 bg-brand-light flex items-center justify-center mb-6 text-brand-gold">
+                        <i data-lucide="sofa" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-3">Relaxed Luxury</h3>
+                    <p class="text-brand-dark/60 text-sm leading-relaxed">
+                        A stylish, acoustically treated environment perfect for unwinding after a long session.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-4 bg-brand-white">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
+            <!-- Image 1 -->
+            <div class="relative h-64 md:h-80 overflow-hidden group gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&auto=format&fit=crop" alt="Cafe Interior" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <div class="gallery-overlay absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="text-brand-white font-heading font-bold tracking-widest uppercase text-sm">Interior</span>
+                </div>
+            </div>
+            <!-- Image 2 -->
+            <div class="relative h-64 md:h-80 overflow-hidden group gallery-item reveal delay-100">
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop" alt="Food & Coffee" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <div class="gallery-overlay absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="text-brand-white font-heading font-bold tracking-widest uppercase text-sm">Premium Food</span>
+                </div>
+            </div>
+            <!-- Image 3 -->
+            <div class="relative h-64 md:h-80 overflow-hidden group gallery-item reveal delay-200">
+                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop" alt="Workspace" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <div class="gallery-overlay absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="text-brand-white font-heading font-bold tracking-widest uppercase text-sm">Workspaces</span>
+                </div>
+            </div>
+            <!-- Image 4 -->
+            <div class="relative h-64 md:h-80 overflow-hidden group gallery-item reveal delay-300">
+                <img src="https://images.unsplash.com/photo-1503423571797-2d2bb372094a?q=80&w=1974&auto=format&fit=crop" alt="Burger" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <div class="gallery-overlay absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="text-brand-white font-heading font-bold tracking-widest uppercase text-sm">Signature Menu</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="py-24 bg-brand-dark text-brand-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="mb-12 reveal">
+                <h4 class="text-brand-gold text-sm font-bold tracking-widest uppercase mb-4">Testimonials</h4>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold">Client Experiences</h2>
+            </div>
+
+            <!-- Horizontal Scroll Container -->
+            <div class="flex overflow-x-auto space-x-6 pb-8 snap-x snap-mandatory no-scrollbar reveal">
+                
+                <!-- Review 1 -->
+                <div class="min-w-[300px] md:min-w-[400px] bg-white/5 p-8 border border-white/10 snap-start shrink-0">
+                    <div class="flex text-brand-gold mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-lg font-light italic mb-6">"Stylish spot… perfect for deep work or relaxing. The internet is fast, and the seating is incredibly comfortable."</p>
+                    <p class="font-heading font-bold text-sm tracking-wider uppercase">— Sarah M.</p>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="min-w-[300px] md:min-w-[400px] bg-white/5 p-8 border border-white/10 snap-start shrink-0">
+                    <div class="flex text-brand-gold mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-lg font-light italic mb-6">"Ideal for meetings and lunch. Booked the private room for a client presentation, and the catering was top tier."</p>
+                    <p class="font-heading font-bold text-sm tracking-wider uppercase">— James D.</p>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="min-w-[300px] md:min-w-[400px] bg-white/5 p-8 border border-white/10 snap-start shrink-0">
+                    <div class="flex text-brand-gold mb-6">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-lg font-light italic mb-6">"Great coffee, reliable Wi-Fi, and a mature atmosphere. Finally, a co-working cafe that gets it right."</p>
+                    <p class="font-heading font-bold text-sm tracking-wider uppercase">— Michael T.</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Preview Section -->
+    <section id="menu" class="py-24 bg-brand-light">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h4 class="text-brand-gold text-sm font-bold tracking-widest uppercase mb-4">Culinary Experience</h4>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-brand-dark">Menu Highlights</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Menu Item 1 -->
+                <div class="bg-brand-white shadow-sm hover:shadow-premium transition-shadow duration-300 reveal">
+                    <img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?q=80&w=2070&auto=format&fit=crop" alt="Breakfast" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-lg">Morning Start</h3>
+                            <span class="text-brand-gold font-bold">R85</span>
+                        </div>
+                        <p class="text-brand-dark/60 text-sm">Artisanal sourdough, poached eggs, smashed avocado, and micro-herbs.</p>
+                    </div>
+                </div>
+
+                <!-- Menu Item 2 -->
+                <div class="bg-brand-white shadow-sm hover:shadow-premium transition-shadow duration-300 reveal delay-100">
+                    <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=2073&auto=format&fit=crop" alt="Toasted Sandwich" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-lg">Executive Toastie</h3>
+                            <span class="text-brand-gold font-bold">R110</span>
+                        </div>
+                        <p class="text-brand-dark/60 text-sm">Pastrami, emmental cheese, house mustard, toasted on ciabatta.</p>
+                    </div>
+                </div>
+
+                <!-- Menu Item 3 -->
+                <div class="bg-brand-white shadow-sm hover:shadow-premium transition-shadow duration-300 reveal delay-200">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1899&auto=format&fit=crop" alt="Burger Deluxe" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-lg">Burger Deluxe</h3>
+                            <span class="text-brand-gold font-bold">R145</span>
+                        </div>
+                        <p class="text-brand-dark/60 text-sm">Wagyu beef patty, aged cheddar, caramelized onions, brioche bun, fries.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center reveal">
+                <a href="#" class="inline-block border border-brand-dark text-brand-dark px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-dark hover:text-brand-white transition-all duration-300">
+                    View Full Menu
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Details Section -->
+    <section id="location" class="py-0 bg-brand-white flex flex-col md:flex-row">
+        <!-- Map -->
+        <div class="w-full md:w-1/2 min-h-[400px] md:min-h-0 bg-brand-gray relative reveal">
+            <!-- Google Maps Embed Placeholder focusing on Ballito / The Quarter -->
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3466.837330752495!2d31.2052!3d-29.5222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDMxJzE5LjkiUyAzMcKwMTInMTguNyJF!5e0!3m2!1sen!2sza!4v1600000000000!5m2!1sen!2sza" 
+                width="100%" 
+                height="100%" 
+                style="border:0; position:absolute; top:0; left:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                class="map-grayscale">
+            </iframe>
+        </div>
+
+        <!-- Details -->
+        <div class="w-full md:w-1/2 py-24 px-6 lg:px-20 flex flex-col justify-center reveal">
+            <h4 class="text-brand-gold text-sm font-bold tracking-widest uppercase mb-4">Find Us</h4>
+            <h2 class="font-heading text-3xl md:text-4xl font-bold text-brand-dark mb-8">The Quarter Centre</h2>
+            
+            <div class="space-y-6 mb-10">
+                <div class="flex items-start">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-brand-gold mt-1 mr-4 shrink-0"></i>
+                    <div>
+                        <p class="font-bold text-brand-dark">Address</p>
+                        <p class="text-brand-dark/70">The Quarter Centre<br>Ballito, KwaZulu-Natal<br>South Africa</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <i data-lucide="clock" class="w-5 h-5 text-brand-gold mt-1 mr-4 shrink-0"></i>
+                    <div>
+                        <p class="font-bold text-brand-dark">Hours</p>
+                        <p class="text-brand-dark/70">Mon - Fri: 06:30 - 17:00<br>Sat - Sun: 07:00 - 14:00</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-brand-gold mt-1 mr-4 shrink-0"></i>
+                    <div>
+                        <p class="font-bold text-brand-dark">Amenities</p>
+                        <p class="text-brand-dark/70">Free High-Speed Wi-Fi<br>Meeting Rooms Available</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#" class="text-center bg-brand-dark text-brand-white px-6 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-gold transition-colors duration-300">
+                    Get Directions
+                </a>
+                <a href="tel:+27000000000" class="text-center border border-brand-dark text-brand-dark px-6 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-dark hover:text-brand-white transition-colors duration-300">
+                    Call Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section id="booking" class="py-32 bg-brand-dark text-center px-4 relative overflow-hidden">
+        <!-- Abstract shape -->
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-gold opacity-5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-brand-white opacity-5 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10 max-w-3xl mx-auto reveal">
+            <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-white mb-6 uppercase tracking-wider">
+                Your New Favourite Workspace
+            </h2>
+            <p class="text-brand-gray text-lg mb-10 font-light">
+                Secure a desk, book a meeting room, or just drop by for exceptional coffee.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="#" class="w-full sm:w-auto bg-brand-gold text-brand-white px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-white hover:text-brand-dark transition-all duration-300">
+                    Book a Table
+                </a>
+                <a href="#location" class="w-full sm:w-auto border border-brand-white text-brand-white px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-brand-white hover:text-brand-dark transition-all duration-300">
+                    Visit The Office
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-dark border-t border-white/10 pt-16 pb-8 text-center md:text-left">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-white/10 pb-12 mb-8">
+                <!-- Brand -->
+                <div>
+                    <a href="#" class="inline-block font-heading font-bold text-xl tracking-widest uppercase text-white leading-none mb-6">
+                        <span class="text-xs tracking-[0.3em] text-brand-gold mb-1 block">The</span>
+                        OFFICE
+                    </a>
+                    <p class="text-brand-gray/60 text-sm max-w-xs mx-auto md:mx-0">
+                        A refined space for professionals to work, meet, and unwind in Ballito.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="flex flex-col space-y-3 text-sm">
+                    <h5 class="text-brand-white font-bold uppercase tracking-widest mb-2">Links</h5>
+                    <a href="#concept" class="text-brand-gray/60 hover:text-brand-gold transition-colors">Concept</a>
+                    <a href="#features" class="text-brand-gray/60 hover:text-brand-gold transition-colors">Workspace</a>
+                    <a href="#menu" class="text-brand-gray/60 hover:text-brand-gold transition-colors">Menu</a>
+                    <a href="#booking" class="text-brand-gray/60 hover:text-brand-gold transition-colors">Booking</a>
+                </div>
+
+                <!-- Socials -->
+                <div class="flex flex-col space-y-3 text-sm">
+                    <h5 class="text-brand-white font-bold uppercase tracking-widest mb-2">Connect</h5>
+                    <div class="flex justify-center md:justify-start space-x-4">
+                        <a href="#" class="text-brand-gray/60 hover:text-brand-gold transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-brand-gray/60 hover:text-brand-gold transition-colors">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-brand-gray/60 hover:text-brand-gold transition-colors">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-brand-gray/40">
+                <p>&copy; <span id="year"></span> The Office Cafe. All rights reserved.</p>
+                <div class="mt-4 md:mt-0 space-x-4">
+                    <a href="#" class="hover:text-brand-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-brand-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Set current year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+            }, 800); // slight delay for smooth feel
+        });
+
+        // Sticky Navbar Logic
+        const navbar = document.getElementById('navbar');
+        const navLinks = document.getElementById('nav-links').querySelectorAll('a');
+        const navLogo = document.getElementById('nav-logo');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                // Scrolled state
+                navbar.classList.remove('bg-transparent', 'py-6');
+                navbar.classList.add('bg-brand-white', 'py-4', 'shadow-sm');
+                
+                navLogo.classList.remove('text-white');
+                navLogo.classList.add('text-brand-dark');
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-brand-dark');
+                });
+
+                mobileBtn.classList.remove('text-white');
+                mobileBtn.classList.add('text-brand-dark');
+            } else {
+                // Top state
+                navbar.classList.add('bg-transparent', 'py-6');
+                navbar.classList.remove('bg-brand-white', 'py-4', 'shadow-sm');
+                
+                navLogo.classList.add('text-white');
+                navLogo.classList.remove('text-brand-dark');
+                
+                navLinks.forEach(link => {
+                    link.classList.add('text-white');
+                    link.classList.remove('text-brand-dark');
+                });
+
+                mobileBtn.classList.add('text-white');
+                mobileBtn.classList.remove('text-brand-dark');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                mobileMenuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6 text-brand-dark"></i>';
+                lucide.createIcons();
+            } else {
+                mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                
+                // Reset icon color based on scroll position
+                const iconColor = window.scrollY > 50 ? 'text-brand-dark' : 'text-white';
+                mobileMenuBtn.innerHTML = `<i data-lucide="menu" class="w-6 h-6 ${iconColor}"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        // Scroll Reveal Animations
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Optional: stop observing once revealed
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+        
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>
